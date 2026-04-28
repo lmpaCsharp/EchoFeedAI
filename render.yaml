@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: echofeed-ai
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: OPENROUTER_MODEL
+        value: openrouter/free
+      - key: OPENROUTER_APP_TITLE
+        value: EchoFeed

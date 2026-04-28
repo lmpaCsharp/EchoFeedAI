@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EchoFeed AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="page-shell">
+        <section class="hero">
+            <div class="hero-content">
+                <p class="eyebrow">Streaming & Social + IA Generativa</p>
+                <h1>EchoFeed AI</h1>
+                <p class="hero-subtitle">
+                    Um simulador de bolhas algorítmicas: o mesmo tema entra, dois perfis saem com feeds diferentes.
+                </p>
+                <div class="hero-tags" aria-label="Características do protótipo">
+                    <span>Python + Flask</span>
+                    <span>OpenRouter escondido no backend</span>
+                    <span>Sem JavaScript próprio</span>
+                    <span>JSON Schema</span>
+                </div>
+            </div>
+            <aside class="thesis-card">
+                <span class="thesis-label">Tese</span>
+                <p>
+                    A personalização algorítmica não muda apenas o que vemos. Ela muda o enquadramento emocional
+                    pelo qual interpretamos a realidade.
+                </p>
+            </aside>
+        </section>
+
+        <section class="panel form-panel" aria-labelledby="experiment-title">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Experimento</p>
+                    <h2 id="experiment-title">Configure dois perfis e gere os feeds</h2>
+                </div>
+                <div class="key-status {% if has_key %}ok{% else %}warn{% endif %}">
+                    {% if has_key %}
+                        Chave OpenRouter detectada
+                    {% else %}
+                        Chave OpenRouter ausente
+                    {% endif %}
+                </div>
+            </div>
+
+            <form method="post" class="experiment-form">
+                <label class="field full">
+                    <span>Tema central</span>
+                    <input type="text" name="topic" value="{{ form.topic }}" maxlength="160" required>
+                </label>
+
+                <label class="field">
+                    <span>Perfil A</span>
+                    <textarea name="profile_a" rows="5" maxlength="700" required>{{ form.profile_a }}</textarea>
+                </label>
+
+                <label class="field">
+                    <span>Perfil B</span>
+                    <textarea name="profile_b" rows="5" maxlength="700" required>{{ form.profile_b }}</textarea>
+                </label>
+
+                <label class="field">
+                    <span>Plataforma simulada</span>
+                    <select name="platform">
+                        {% for platform in platforms %}
+                            <option value="{{ platform }}" {% if form.platform == platform %}selected{% endif %}>{{ platform }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="field">
+                    <span>Intensidade da personalização</span>
+                    <select name="personalization">
+                        {% for level in personalization_levels %}
+                            <option value="{{ level }}" {% if form.personalization == level %}selected{% endif %}>{{ level }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="field">
+                    <span>Objetivo dominante do algoritmo</span>
+                    <select name="algorithm_goal">
+                        {% for goal in algorithm_goals %}
+                            <option value="{{ goal }}" {% if form.algorithm_goal == goal %}selected{% endif %}>{{ goal }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <div class="button-row full">
+                    <button class="primary-button" type="submit" name="action" value="ai">Gerar com IA</button>
+                    <button class="secondary-button" type="submit" name="action" value="demo">Carregar demo offline</button>
+                </div>
+            </form>
+
+            <p class="helper-note">
+                O modo IA usa o modelo definido em <strong>OPENROUTER_MODEL</strong>. O padrão do projeto é <strong>{{ model_name }}</strong>.
+                A chave fica apenas no servidor, nunca no HTML nem no repositório.
+            </p>
+        </section>
+
+        {% if error %}
+            <section class="panel error-panel" aria-live="polite">
+                <p class="eyebrow">Erro controlado</p>
+                <h2>A geração com IA não completou</h2>
+                <p>{{ error }}</p>
+                <p class="helper-note">Para apresentar sem risco, use o botão <strong>Carregar demo offline</strong>.</p>
+            </section>
+        {% endif %}
+
+        {% if result %}
+            <section class="result-header">
+                <p class="eyebrow">Resultado</p>
+                <h2>
+                    {% if mode == "ai" %}
+                        Feeds gerados pela IA via OpenRouter
+                    {% else %}
+                        Demo offline carregada
+                    {% endif %}
+                </h2>
+                <p>
+                    Tema analisado: <strong>{{ form.topic }}</strong>. Compare como o enquadramento muda entre os dois perfis.
+                </p>
+            </section>
+
+            <section class="feeds-grid" aria-label="Feeds simulados">
+                {% for feed_key, feed_label in [("feedA", "Perfil A"), ("feedB", "Perfil B")] %}
+                    {% set feed = result[feed_key] %}
+                    <article class="feed-column">
+                        <div class="feed-head">
+                            <p class="feed-label">{{ feed_label }}</p>
+                            <h3>{{ feed.profileName }}</h3>
+                            <p>{{ feed.dominantNarrative }}</p>
+                        </div>
+
+                        <div class="post-list">
+                            {% for post in feed.posts %}
+                                <article class="post-card">
+                                    <div class="post-number">Post {{ loop.index }}</div>
+                                    <h4>{{ post.title }}</h4>
+                                    <p class="hook">{{ post.hook }}</p>
+                                    <p class="caption">{{ post.caption }}</p>
+
+                                    <dl class="post-details">
+                                        <div>
+                                            <dt>Estilo visual</dt>
+                                            <dd>{{ post.visualStyle }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Tom emocional</dt>
+                                            <dd>{{ post.emotionalTone }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Gatilho de retenção</dt>
+                                            <dd>{{ post.retentionTrigger }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Intenção algorítmica</dt>
+                                            <dd>{{ post.algorithmicIntent }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Efeito provável</dt>
+                                            <dd>{{ post.possibleEffect }}</dd>
+                                        </div>
+                                    </dl>
+
+                                    <div class="risk-group">
+                                        <div class="risk-line">
+                                            <span>Risco de bolha</span>
+                                            <strong>{{ post.bubbleRisk }}%</strong>
+                                        </div>
+                                        <div class="meter" aria-hidden="true"><span style="width: {{ post.bubbleRisk }}%"></span></div>
+
+                                        <div class="risk-line">
+                                            <span>Risco de manipulação</span>
+                                            <strong>{{ post.manipulationRisk }}%</strong>
+                                        </div>
+                                        <div class="meter" aria-hidden="true"><span style="width: {{ post.manipulationRisk }}%"></span></div>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+
+            <section class="panel diagnosis-panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Diagnóstico comparativo</p>
+                        <h2>Essas duas pessoas ainda estão falando do mesmo assunto?</h2>
+                    </div>
+                </div>
+
+                <div class="diagnosis-text">
+                    <article>
+                        <h3>Diferença de enquadramento</h3>
+                        <p>{{ result.comparison.framingDifference }}</p>
+                    </article>
+                    <article>
+                        <h3>Diferença emocional</h3>
+                        <p>{{ result.comparison.emotionalDifference }}</p>
+                    </article>
+                    <article class="wide">
+                        <h3>Conclusão crítica</h3>
+                        <p>{{ result.comparison.criticalConclusion }}</p>
+                    </article>
+                </div>
+
+                <div class="score-grid">
+                    {% for label, value in [
+                        ("Risco de bolha", result.comparison.bubbleRisk),
+                        ("Risco de manipulação", result.comparison.manipulationRisk),
+                        ("Risco de polarização", result.comparison.polarizationRisk),
+                        ("Pressão de retenção", result.comparison.retentionPressure)
+                    ] %}
+                        <div class="score-card">
+                            <span>{{ label }}</span>
+                            <strong>{{ value }}%</strong>
+                            <div class="meter large" aria-hidden="true"><span style="width: {{ value }}%"></span></div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <blockquote class="final-question">
+                    {{ result.comparison.finalQuestion }}
+                </blockquote>
+            </section>
+        {% endif %}
+
+        {% if prompt_preview %}
+            <section class="panel prompt-panel">
+                <p class="eyebrow">Transparência do experimento</p>
+                <h2>Prompt enviado para o modelo</h2>
+                <textarea readonly rows="12">{{ prompt_preview }}</textarea>
+            </section>
+        {% endif %}
+    </main>
+</body>
+</html>
