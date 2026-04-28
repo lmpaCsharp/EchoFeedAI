@@ -133,3 +133,31 @@ git push -u origin main
 ## Entrega da atividade
 
 Use o texto do arquivo `ENTREGA.md` e substitua o campo do link pelo link do deploy.
+
+## Correção de riscos numéricos
+
+Nesta versão, a IA gera os textos, mas o backend recalcula os números de risco com uma heurística do próprio experimento. Isso evita casos em que um modelo gratuito retorna `0%` para bolha, manipulação ou polarização mesmo quando o próprio texto mostra uma bolha clara.
+
+A pontuação considera:
+
+- intensidade da personalização;
+- objetivo dominante do algoritmo;
+- plataforma simulada;
+- divergência de vocabulário entre os dois feeds;
+- presença de termos de medo, urgência, certeza absoluta e identidade de grupo.
+
+## Erro HTTP 429 no OpenRouter
+
+HTTP 429 significa limite temporário do modelo/provedor gratuito. O app agora tenta novamente algumas vezes. Também existe a variável opcional `OPENROUTER_MODEL_FALLBACKS`, onde você pode listar outros modelos separados por vírgula.
+
+O botão **Carregar demo offline** continua sendo o plano B para apresentação.
+
+## Motor de pontuação v3
+
+A IA gera os textos, mas o backend recalcula todos os números. A matriz de pontuação considera todas as opções do formulário:
+
+- Plataformas: TikTok, Instagram Reels, YouTube Shorts, LinkedIn e Feed misto.
+- Intensidade: Baixa, Média e Alta.
+- Objetivo: Informar, Reter atenção, Engajar, Vender e Polarizar.
+
+Isso evita resultados incoerentes como uma simulação com personalização alta e objetivo de polarização aparecer com 0% de risco.
